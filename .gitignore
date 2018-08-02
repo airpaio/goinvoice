@@ -1,0 +1,14 @@
+# Executables
+*.exe
+*.out
+*.lex
+
+# qtmoc files
+moc*
+
+# Play directory - this was just used for playing around
+# with database functionality and would not be useful for 
+# publishing.
+
+# build directories
+deploy/
