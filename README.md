@@ -43,8 +43,8 @@ This application was originally built to serve as a demo for automation purposes
 The app interacts with data from a MongoDB backend, and a Qt5 frontend.
 
 ### What it Looks Like:
-![Main Window](https://github.com/creedr/goinvoice/blob/master/Images/invoiceShot1.png "The Main Window")
-![Add Invoice Dialog](https://github.com/creedr/goinvoice/blob/master/Images/invoiceShot2.png "Add Invoice Dialog")
+![Main Window](Images/invoiceShot1.png "The Main Window")
+![Add Invoice Dialog](Images/invoiceShot2.png "Add Invoice Dialog")
 
 ### How to get it?
 Just clone it. There are no plans to make it go gettable.
