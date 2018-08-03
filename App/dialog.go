@@ -1,3 +1,17 @@
+// Copyright 2016 Cory Robinson. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE.txt file.
+
+// dialog.go implements functionality for a dialog window.
+// Thus far, the only dialog functionality is adding new invoices
+// with form data. The dialog is functioning, but could use some work.
+// TODO:
+// 		1. Finish implementing a way to uniquely identify a new invoice
+//			with a hash value, and display the hash id, and date-time
+//			added at the top of the dialog. Should also map to a
+// 			unique hash id in the DB.
+//		2. Restrict form input to specific data types and character lengths, etc.
+
 package main
 
 import (
@@ -51,11 +65,13 @@ type Dialog struct {
 	mwin MainWindow
 }
 
+// init() initializes dialog with default button functionality.
 func (d *Dialog) init() {
 	d.ConnectReset(d.reset)
 	d.ConnectSubmit(d.submit)
 }
 
+// initWith() initializes dialog with layout.
 func (d *Dialog) initWith(parent *widgets.QWidget) {
 	counterBox := d.createCounterGroupBox()
 	vendorBox := d.createVendorGroupBox()
@@ -82,6 +98,8 @@ func (d *Dialog) initWith(parent *widgets.QWidget) {
 
 }
 
+// lineItemsTableAddRow() creates functionality to add a row to the lineItems table
+// if selected cell or row is the current last row and 'enter' is pressed.
 func (d *Dialog) lineItemsTableAddRow() {
 	rowCount := d.lineItemsTable.RowCount()
 	if d.lineItemsTable.CurrentRow() == rowCount-1 {
@@ -90,6 +108,9 @@ func (d *Dialog) lineItemsTableAddRow() {
 	}
 }
 
+// tableKeyPressEvent() implements the actual 'enter' key press event to add new row to table.
+// Also adds functionality for tabbing thru cells, and pressing 'tab' on last cell
+// will add a new row.
 func (d *Dialog) tableKeyPressEvent(e *gui.QKeyEvent) {
 	rowCount := d.lineItemsTable.RowCount()
 	colCount := d.lineItemsTable.ColumnCount()
@@ -114,7 +135,8 @@ func (d *Dialog) tableKeyPressEvent(e *gui.QKeyEvent) {
 	}
 }
 
-//(e.Key() == int(core.Qt__Key_Tab))
+// createCounterGroupBox() the top box in the app layout grid where date-time, invoice
+// id hash should be displayed. Note: Not finished; refer to TODO-2 at top of this file.
 func (d *Dialog) createCounterGroupBox() *widgets.QGroupBox {
 	box := widgets.NewQGroupBox(nil)
 
@@ -131,6 +153,9 @@ func (d *Dialog) createCounterGroupBox() *widgets.QGroupBox {
 	return box
 }
 
+// createVendorGroupBox() creates group box for entering the Vendor's name.
+// Note: Redesign? Perhaps make an editable combobox - editible for entering new
+// vendor name, combobox for selecting existing vendor name.
 func (d *Dialog) createVendorGroupBox() *widgets.QGroupBox {
 	box := widgets.NewQGroupBox2("VENDOR:", nil)
 
@@ -144,6 +169,7 @@ func (d *Dialog) createVendorGroupBox() *widgets.QGroupBox {
 	return box
 }
 
+// createAddressGroupBox() creates group box for entering address information.
 func (d *Dialog) createAddressGroupBox() *widgets.QGroupBox {
 	box := widgets.NewQGroupBox2("ADDRESS:", nil)
 
@@ -173,6 +199,7 @@ func (d *Dialog) createAddressGroupBox() *widgets.QGroupBox {
 	return box
 }
 
+// createLineItemsGroupBox() creates table for entering line item information.
 func (d *Dialog) createLineItemsGroupBox() *widgets.QGroupBox {
 	box := widgets.NewQGroupBox2("LINE ITEMS:", nil)
 
@@ -194,6 +221,8 @@ func (d *Dialog) createLineItemsGroupBox() *widgets.QGroupBox {
 	return box
 }
 
+// createRightGroupBox() creates the entire right side of app grid for
+// entering other simple form data such as invoice number, date, total, etc.
 func (d *Dialog) createRightGroupBox() *widgets.QGroupBox {
 	box := widgets.NewQGroupBox(nil)
 
@@ -231,6 +260,7 @@ func (d *Dialog) createRightGroupBox() *widgets.QGroupBox {
 	return box
 }
 
+// createButtonBox() creates the button box for submit, close, reset, etc.
 func (d *Dialog) createButtonBox() *widgets.QDialogButtonBox {
 	box := widgets.NewQDialogButtonBox(nil)
 
@@ -251,6 +281,7 @@ func (d *Dialog) createButtonBox() *widgets.QDialogButtonBox {
 	return box
 }
 
+// submit() slot for submitting new invoice to DB.
 func (d *Dialog) submit() {
 	var (
 		liProductID   string
@@ -329,6 +360,7 @@ func (d *Dialog) submit() {
 	d.Accepted()
 }
 
+// reset() slot for resetting all form data in the dialog.
 func (d *Dialog) reset() {
 	d.vendorEditor.Clear()
 	d.streetEditor.Clear()

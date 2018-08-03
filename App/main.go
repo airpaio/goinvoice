@@ -1,3 +1,9 @@
+// Copyright 2016 Cory Robinson. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE.txt file.
+
+// main.go is the script that starts the GUI application and keeps it running.
+
 package main
 
 import (

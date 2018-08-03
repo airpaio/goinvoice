@@ -1,3 +1,10 @@
+// Copyright 2016 Cory Robinson. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE.txt file.
+
+// mainWindow.go implements the frontend layout and functionality
+// of the Invoice Demo GUI.
+
 package main
 
 import (
@@ -31,23 +38,15 @@ type MainWindow struct {
 
 	headerView *widgets.QHeaderView
 
-	vendorLabel *widgets.QLabel
-	//addressLabel            *widgets.QLabel
+	vendorLabel             *widgets.QLabel
 	invoiceCountVendorLabel *widgets.QLabel
 	invoiceDetailsLabel     *widgets.QLabel
-
-	allVendorsLabel *widgets.QLabel
-	// vendorCountAllLabel  *widgets.QLabel
-	// paidStatusLabel         *widgets.QLabel
-	// dateLabel               *widgets.QLabel
-	// invoiceNoLabel          *widgets.QLabel
-	// purchaseOrderLabel      *widgets.QLabel
-	// totalLabel              *widgets.QLabel
-	// currencyLabel           *widgets.QLabel
+	allVendorsLabel         *widgets.QLabel
 
 	model Repository
 }
 
+// init() initializes the app connecting some default slots
 func (w *MainWindow) init() {
 	w.ConnectAbout(w.about)
 	w.ConnectAddInvoice(w.addInvoice)
@@ -55,6 +54,7 @@ func (w *MainWindow) init() {
 	w.ConnectShowAllVendorsProfile(w.showAllVendorsProfile)
 }
 
+// initWith() initializes the layout views
 func (w *MainWindow) initWith(parent *widgets.QWidget) {
 	//w.setVendorView()
 	vendor := w.createVendorGroupBox()
@@ -88,6 +88,8 @@ func (w *MainWindow) initWith(parent *widgets.QWidget) {
 	w.showAllVendorsProfile()
 }
 
+// changeVendor() a slot that changes the view depending on the
+// invoice that is selected in the combobox.
 func (w *MainWindow) changeVendor(text string) {
 	if text == "<all invoices>" {
 		w.showAllVendorsProfile()
@@ -104,6 +106,8 @@ func (w *MainWindow) changeVendor(text string) {
 	}
 }
 
+// showVendorProfile() renders the display of vendor information
+// on the right hand side of the app grid.
 func (w *MainWindow) showVendorProfile(name string) {
 	record := w.model.GetInvoiceByString(name)[0]
 
@@ -131,6 +135,8 @@ func (w *MainWindow) showVendorProfile(name string) {
 	//w.invoiceDetailsLabel.Hide()
 }
 
+// showInvoiceProfile renders the display of invoice information
+// on the right hand side of the app grid.
 func (w *MainWindow) showInvoiceProfile(index *core.QModelIndex) {
 	var record Invoice
 	var invNo, vend *core.QVariant
@@ -175,6 +181,8 @@ func (w *MainWindow) showInvoiceProfile(index *core.QModelIndex) {
 	w.invoiceCountVendorLabel.Show()
 }
 
+// showAllVendorsProfile() renders the display of general stats
+// e.g. total number of invoices, etc. on the right hand side of the app grid.
 func (w *MainWindow) showAllVendorsProfile() {
 	countAllVendors := w.model.CountVendors()
 	countAllInvoices := w.model.RecordCount()
@@ -192,6 +200,9 @@ func (w *MainWindow) showAllVendorsProfile() {
 	w.invoiceDetailsLabel.Hide()
 }
 
+// showInvoicesTableView() generates the table displaying invoices
+// for either all vendors or each individual vendor. This is the top
+// table on the left hand side of the app grid.
 func (w *MainWindow) showInvoicesTableView(vendor string) {
 	var table [][]string
 	//var w.tableModel *core.QAbstractTableModel
@@ -261,6 +272,9 @@ func (w *MainWindow) showInvoicesTableView(vendor string) {
 	w.invoicesTableView.Show()
 }
 
+// showLineItemsTableView() generates the table displaying line items
+// for the invoice selected from the top table or showInvoicesTableView.
+// This is the bottom table on the left hand side of the app grid.
 func (w *MainWindow) showLineItemsTableView(invoiceNo, ven, changeCase string) {
 	var table [][]string
 	switch changeCase {
@@ -298,6 +312,9 @@ func (w *MainWindow) showLineItemsTableView(invoiceNo, ven, changeCase string) {
 	w.lineItemTableView.Show()
 }
 
+// headerdataAll() displays the header in the showInvoicesTableView().
+// NOTE: These "header" function probably could have been implemented
+// better, they are kinda brute-forced, but it got the job done for now.
 func (w *MainWindow) headerdataAll(section int, orientation core.Qt__Orientation, role int) *core.QVariant {
 	if section == 0 && orientation == core.Qt__Horizontal && role == 0 { // Qt__Horizontal, Qt__DisplayRole
 		return core.NewQVariant14("Vendor")
@@ -313,6 +330,9 @@ func (w *MainWindow) headerdataAll(section int, orientation core.Qt__Orientation
 	return core.NewQVariant()
 }
 
+// headerdataIndividual() displays the header in the showInvoicesTableView().
+// NOTE: These "header" function probably could have been implemented
+// better, they are kinda brute-forced, but it got the job done for now.
 func (w *MainWindow) headerdataIndividual(section int, orientation core.Qt__Orientation, role int) *core.QVariant {
 	if section == 0 && orientation == core.Qt__Horizontal && role == 0 { // Qt__Horizontal, Qt__DisplayRole
 		return core.NewQVariant14("Invoice No.")
@@ -326,6 +346,9 @@ func (w *MainWindow) headerdataIndividual(section int, orientation core.Qt__Orie
 	return core.NewQVariant()
 }
 
+// headerdataLineItems() displays the header in the showLineItemsTableView().
+// NOTE: These "header" function probably could have been implemented
+// better, they are kinda brute-forced, but it got the job done for now.
 func (w *MainWindow) headerdataLineItems(section int, orientation core.Qt__Orientation, role int) *core.QVariant {
 	if section == 0 && orientation == core.Qt__Horizontal && role == 0 { // Qt__Horizontal, Qt__DisplayRole
 		return core.NewQVariant14("Product ID")
@@ -339,6 +362,8 @@ func (w *MainWindow) headerdataLineItems(section int, orientation core.Qt__Orien
 	return core.NewQVariant()
 }
 
+// headerdataLineItemsSelectInvoice() on the bottom table, simply displays
+// 'Select An Invoice' if no invoice has been selected from the top table.
 func (w *MainWindow) headerdataLineItemsSelectInvoice(section int, orientation core.Qt__Orientation, role int) *core.QVariant {
 	if section == 0 && orientation == core.Qt__Horizontal && role == 0 { // Qt__Horizontal, Qt__DisplayRole
 		return core.NewQVariant14("Select An Invoice")
@@ -346,6 +371,7 @@ func (w *MainWindow) headerdataLineItemsSelectInvoice(section int, orientation c
 	return core.NewQVariant()
 }
 
+// setVendorView() sets the vendorView model from a string array.
 func (w *MainWindow) setVendorView() {
 	stringList := w.model.GetInvoiceVendors()
 	stringList = append([]string{"<all invoices>"}, stringList...) // prepend to stringList
@@ -356,6 +382,8 @@ func (w *MainWindow) setVendorView() {
 	w.vendorView.SetModel(core.NewQStringListModel2(stringList, nil))
 }
 
+// createVendorGroupBox() sets up the layout for the combobox section of the
+// app grid, where you can select which vendor from the combobox.
 func (w *MainWindow) createVendorGroupBox() *widgets.QGroupBox {
 	box := widgets.NewQGroupBox2("Vendor", nil)
 
@@ -374,6 +402,8 @@ func (w *MainWindow) createVendorGroupBox() *widgets.QGroupBox {
 	return box
 }
 
+// createInvoicesGroupBox() sets up the layout for the List of invoices table,
+// i.e. the top table on the left hand side of the app grid.
 func (w *MainWindow) createInvoicesGroupBox() *widgets.QGroupBox {
 	box := widgets.NewQGroupBox2("Invoices", nil)
 
@@ -401,6 +431,8 @@ func (w *MainWindow) createInvoicesGroupBox() *widgets.QGroupBox {
 	return box
 }
 
+// createLineItemsGroupBox() sets up the layout for the line-items table,
+// i.e. the bottom table on the left hand side of the app grid.
 func (w *MainWindow) createLineItemsGroupBox() *widgets.QGroupBox {
 	box := widgets.NewQGroupBox2("Line Items", nil)
 
@@ -433,6 +465,8 @@ func (w *MainWindow) createLineItemsGroupBox() *widgets.QGroupBox {
 // 	w.lineItemTableView.HideColumn(3)
 // }
 
+// createDetailsGroupBox() sets up the layout for the details display
+// on the right hand side of the app grid.
 func (w *MainWindow) createDetailsGroupBox() *widgets.QGroupBox {
 	box := widgets.NewQGroupBox2("Details", nil)
 
@@ -467,6 +501,8 @@ func (w *MainWindow) createDetailsGroupBox() *widgets.QGroupBox {
 	return box
 }
 
+// tableForInvoicesAllTableView() queries data and sets up the table model
+// for the InvoicesAllTableView.
 func (w *MainWindow) tableForInvoicesAllTableView() [][]string {
 	r := w.model.GetTableAllView()
 
@@ -499,6 +535,8 @@ func (w *MainWindow) tableForInvoicesAllTableView() [][]string {
 	return table
 }
 
+// tableForInvoicesVendorTableView() queries data and sets up the table model
+// for the individual vendors InvoicesVendorTableView.
 func (w *MainWindow) tableForInvoicesVendorTableView(vendor string) [][]string {
 	r := w.model.GetTableVendorView(vendor)
 
@@ -529,6 +567,8 @@ func (w *MainWindow) tableForInvoicesVendorTableView(vendor string) [][]string {
 	return table
 }
 
+// tableForLineItemsTableView() queries data and sets up the table model
+// for the individual vendor invoices line items LineItemsTableView.
 func (w *MainWindow) tableForLineItemsTableView(invoiceNo, vendor string) [][]string {
 	r := w.model.GetTableLineItemView(invoiceNo, vendor)
 
@@ -553,6 +593,7 @@ func (w *MainWindow) tableForLineItemsTableView(invoiceNo, vendor string) [][]st
 	return table
 }
 
+// createMenuBar() sets up the menu bar in the main window.
 func (w *MainWindow) createMenuBar() {
 	addAction := widgets.NewQAction2("&Add Invoice...", w)
 	quitAction := widgets.NewQAction2("&Quit", w)
@@ -577,6 +618,7 @@ func (w *MainWindow) createMenuBar() {
 
 }
 
+// addInvoice() slot to open the addInvoice dialog.
 func (w *MainWindow) addInvoice() {
 	dialog := NewDialog(nil, 0)
 	//dialog.initWith(w.QWidget_PTR())
@@ -592,7 +634,7 @@ func (w *MainWindow) addInvoice() {
 	//dialog.Show()
 }
 
-// adjustHeader will adjust the table headers in the QTableViews
+// adjustHeader() will adjust the table headers in the QTableViews
 func (w *MainWindow) adjustHeader() {
 	switch w.tableCase {
 	case "all":
@@ -611,6 +653,7 @@ func (w *MainWindow) adjustHeader() {
 	}
 }
 
+// adjustLineItemsHeader() will adjust the table headers in the QTableViews
 func (w *MainWindow) adjustLineItemsHeader() {
 	w.lineItemTableView.HorizontalHeader().SetSectionResizeMode2(0, widgets.QHeaderView__Stretch)
 	w.lineItemTableView.ResizeColumnToContents(1)
@@ -618,6 +661,7 @@ func (w *MainWindow) adjustLineItemsHeader() {
 	w.lineItemTableView.ResizeColumnToContents(3)
 }
 
+// about() slot to launch dialog displaying info about the app.
 func (w *MainWindow) about() {
 	widgets.QMessageBox_About(w, "About Invoice Viewer",
 		`<p> The <b>Invoice Viewer</b> example shows how invoices can be presented from a database. 

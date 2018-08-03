@@ -1,3 +1,12 @@
+// Copyright 2016 Cory Robinson. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE.txt file.
+
+// repository.go implements functionality for interacting with the
+// MongoDB backend. Here, we connect to the MongoDB database, and
+// implement functions with CRUD (Create-Read-Update-Delete)
+// like functionality.
+
 package main
 
 import (
@@ -9,7 +18,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-//Repository ...
+// Repository ...
 type Repository struct{}
 
 // SERVER the DB server
@@ -43,7 +52,7 @@ func (r Repository) GetInvoices() Invoices {
 	return results
 }
 
-// GetTableAllView returns values for the invoicesAllTable
+// GetTableAllView returns values for the invoicesAllTableView
 func (r Repository) GetTableAllView() Invoices {
 	session, err := mgo.Dial(SERVER)
 
@@ -63,7 +72,7 @@ func (r Repository) GetTableAllView() Invoices {
 	return results
 }
 
-// GetTableVendorView returns values for the invoicesAllTable
+// GetTableVendorView returns values for the invoicesVendorTableView
 func (r Repository) GetTableVendorView(name string) Invoices {
 	session, err := mgo.Dial(SERVER)
 
@@ -83,7 +92,7 @@ func (r Repository) GetTableVendorView(name string) Invoices {
 	return results
 }
 
-// GetTableLineItemView returns values for the lineItemsTable
+// GetTableLineItemView returns values for the lineItemTableView
 func (r Repository) GetTableLineItemView(num, vendor string) Items {
 	session, err := mgo.Dial(SERVER)
 
@@ -152,7 +161,7 @@ func (r Repository) GetInvoiceVendorIDs() []int {
 	return results
 }
 
-// GetInvoiceById returns a unique Invoice
+// GetInvoiceById returns a unique Invoice queried by ID.
 func (r Repository) GetInvoiceById(id int) Invoice {
 	session, err := mgo.Dial(SERVER)
 
@@ -174,7 +183,7 @@ func (r Repository) GetInvoiceById(id int) Invoice {
 	return result
 }
 
-// GetInvoiceByInvoiceNoAndVendor returns a unique Invoice
+// GetInvoiceByInvoiceNoAndVendor returns a unique Invoice.
 func (r Repository) GetInvoiceByInvoiceNoAndVendor(num, vendor string) Invoice {
 	session, err := mgo.Dial(SERVER)
 
@@ -194,7 +203,7 @@ func (r Repository) GetInvoiceByInvoiceNoAndVendor(num, vendor string) Invoice {
 	return result
 }
 
-// GetInvoicesByString takes a search string as input and returnsInvoices
+// GetInvoicesByString takes a search string as input and returns Invoices
 func (r Repository) GetInvoiceByString(query string) Invoices {
 	session, err := mgo.Dial(SERVER)
 
@@ -224,6 +233,8 @@ func (r Repository) GetInvoiceByString(query string) Invoices {
 	return results
 }
 
+// CountInvoicesByVendorName returns the number of invoices for each unique
+// vendor name.
 func (r Repository) CountInvoicesByVendorName(name string) int {
 	session, err := mgo.Dial(SERVER)
 
@@ -244,7 +255,8 @@ func (r Repository) CountInvoicesByVendorName(name string) int {
 	return result
 }
 
-// GetLineItemsByVendorID takes the DB vendor ID and returns a list of LineItems from the invoice
+// GetLineItemsByVendorID takes the DB vendor ID and returns a list of
+// LineItems from the invoice
 func (r Repository) GetLineItemsByVendorID(id int) []string {
 	session, err := mgo.Dial(SERVER)
 
@@ -264,7 +276,7 @@ func (r Repository) GetLineItemsByVendorID(id int) []string {
 	return results
 }
 
-// AddInvoice adds a Invoice in the DB
+// AddInvoice adds an Invoice in the DB
 func (r Repository) AddInvoice(invoice Invoice) bool {
 	session, err := mgo.Dial(SERVER)
 	defer session.Close()
@@ -282,7 +294,7 @@ func (r Repository) AddInvoice(invoice Invoice) bool {
 	return true
 }
 
-// UpdateInvoice updates a Invoice in the DB
+// UpdateInvoice updates an Invoice in the DB
 func (r Repository) UpdateInvoice(invoice Invoice) bool {
 	session, err := mgo.Dial(SERVER)
 	defer session.Close()
@@ -315,6 +327,7 @@ func (r Repository) DeleteInvoice(id int) string {
 	return "OK"
 }
 
+// CountPaidTrue returns the number of paid invoices.
 func (r Repository) CountPaidTrue() int {
 	session, err := mgo.Dial(SERVER)
 
@@ -335,6 +348,7 @@ func (r Repository) CountPaidTrue() int {
 	return result
 }
 
+// CountPaidFalse returns the number of not paid invoices
 func (r Repository) CountPaidFalse() int {
 	session, err := mgo.Dial(SERVER)
 
@@ -355,6 +369,7 @@ func (r Repository) CountPaidFalse() int {
 	return result
 }
 
+// RecordCount returns the total number of records in the DB.
 func (r Repository) RecordCount() int {
 	session, err := mgo.Dial(SERVER)
 
@@ -375,6 +390,9 @@ func (r Repository) RecordCount() int {
 	return result
 }
 
+// maxID returns the largest ID in the DB.
+// Note: IDs are incremented sequentially, but there may be gaps in the
+// numbering due to Deleted records.
 func (r Repository) maxID() int {
 	var ids []int
 
@@ -389,6 +407,8 @@ func (r Repository) maxID() int {
 	return max
 }
 
+// incrementVendorID increments the ID by one for adding new records.
+// Is this implemented somewhere else?
 func (r Repository) incrementVendorID() int {
 	var maxID int
 

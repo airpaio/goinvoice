@@ -1,3 +1,15 @@
+// Copyright 2016 Cory Robinson. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE.txt file.
+
+// createDummyData.go is a script that will insert dummy data into a MongoDB database.
+// You should have an instance of MongoDB running and listening on the default port 27017
+// before running this script. To run the script simply run the command
+// `go run createDummyData.go` in your console.
+//
+// Feel free to modify this script to meet your needs. You can easily add more data
+// with the err = c.Insert() code in the main() function below.
+
 package main
 
 import (
@@ -53,9 +65,6 @@ func main() {
 		panic(err)
 	}
 	defer session.Close()
-
-	// Optional. Switch the session to a monotonic behavior.
-	//session.SetMode(mgo.Monotonic, true)
 
 	c := session.DB(DBNAME).C(COLLECTION)
 	err = c.Insert(&Invoice{1, "Right Company", Location{"123 Right Way Dr.", "Smalltown", "TX", "77336"}, Items{Item{"90d-p", "Right angle pencils", 5, 758}}, "123456", "02/24/2018", "1200364", 3790, "USD", true},

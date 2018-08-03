@@ -1,3 +1,9 @@
+// Copyright 2016 Cory Robinson. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE.txt file.
+
+// model.go defines the model that our MongoDB data repository will follow.
+
 package main
 
 // Invoice represents parts of an invoice
@@ -14,6 +20,7 @@ type Invoice struct {
 	Paid          bool     `json:"paid"`
 }
 
+// Location is a subfield containing address information.
 type Location struct {
 	Street  string `json:"street"`
 	City    string `json:"city"`
@@ -21,6 +28,7 @@ type Location struct {
 	Zipcode string `json:"zipcode"`
 }
 
+// Item is a subfield containing invoice line-item information.
 type Item struct {
 	ProductID   string `json:"productid"`
 	Description string `json:"description"`
@@ -28,6 +36,8 @@ type Item struct {
 	Amount      int64  `json:"amount"`
 }
 
+// Items is an array of Item
 type Items []Item
 
+// Invoices is an array of Invoice
 type Invoices []Invoice
